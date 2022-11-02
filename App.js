@@ -48,6 +48,10 @@ app.post("/work", function (req, res) {
   res.redirect("/work");
 });
 
+app.get("/about", function (req, res) {
+  res.render("about");
+});
+
 app.listen("3000", function () {
   console.log("Server is running correctly");
 });
