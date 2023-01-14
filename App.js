@@ -1,41 +1,62 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
 
 const app = express();
 
-let newtodos = [];
-let workItems = [];
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
+mongoose.set("strictQuery", true);
+mongoose.connect("mongodb://127.0.0.1:27017/todolistDB");
 
 app.set("view engine", "ejs");
 
+const ItemSchema = new mongoose.Schema({
+  name: String,
+});
+
+const Item = mongoose.model("Item", ItemSchema);
+
+const item1 = new Item({
+  name: "Pray",
+});
+const item2 = new Item({
+  name: "Eat",
+});
+const item3 = new Item({
+  name: "Sleep",
+});
+
+const defualtItems = [item1, item2, item3];
+
 app.get("/", function (req, res) {
-  let today = new Date();
-
-  let options = {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  };
-  let day = today.toLocaleDateString("en-US", options);
-
-  res.render("list", { listTitle: day, newtodo: newtodos });
+  Item.find({}, function (err, foundItems) {
+    if (foundItems.length === 0) {
+      Item.insertMany(defualtItems, function (err) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("insert in to many successfully");
+        }
+      });
+      res.redirect("/");
+    } else {
+      res.render("list", { listTitle: "Today", newtodo: foundItems });
+    }
+  });
 });
 
 app.post("/", function (req, res) {
+  const itemName = req.body.newtodo;
 
-  newtodo = req.body.newtodo;
+  const newItem = new Item({
+    name: itemName
+  })
 
-  if (req.body.list === "Work") {
-    workItems.push(newtodo);
-    res.redirect("/work");
-  } else {
-    newtodos.push(newtodo);
+  newItem.save()
 
-    res.redirect("/");
-  }
+  res.redirect("/")
+ 
 });
 
 app.get("/work", function (req, res) {

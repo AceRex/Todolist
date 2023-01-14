@@ -5,15 +5,17 @@
       <%= listTitle %>
     </h1>
   </div>
+  
   <div class="box">
-    <% for (var i=0; i < newtodo.length; i++) { %>
-      <div class="item">
-        <input type="checkbox">
-        <p>
-          <%= newtodo[i] %>
-        </p>
-      </div>
-      <% } %>
+    
+      <% newtodo.forEach(function({name}){ %>
+        <div class="item">
+          <input type="checkbox">
+          <p>
+            <%= name %>
+          </p>
+        </div>
+      <% }) %> 
       <form class="item" method="post" action="/">
         <input type="text" name="newtodo" placeholder="enter a new todo" autocomplete="off"/>
         <button type="submit" name="list" value=<%= listTitle %>>+</button>
