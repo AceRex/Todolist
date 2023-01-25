@@ -29,6 +29,13 @@ const item3 = new Item({
 
 const defualtItems = [item1, item2, item3];
 
+const listSchema = {
+  name: String,
+  items: [ItemSchema]
+}
+
+const List = mongoose.model("List", listSchema)
+
 app.get("/", function (req, res) {
   Item.find({}, function (err, foundItems) {
     if (foundItems.length === 0) {
@@ -46,6 +53,17 @@ app.get("/", function (req, res) {
   });
 });
 
+app.get("/:customListName", function (req, res) {
+  const customListName = req.params.customListName
+
+  const list = new List({
+    name: customListName,
+    items: defualtItems
+  })
+
+  list.save()
+});
+
 app.post("/", function (req, res) {
   const itemName = req.body.newtodo;
 
@@ -59,9 +77,18 @@ app.post("/", function (req, res) {
  
 });
 
-app.get("/work", function (req, res) {
-  res.render("list", { listTitle: "Work List", newtodo: workItems });
-});
+app.post("/delete", function(req, res){
+
+ const checkedItemId = req.body.checkbox;
+
+ Item.findByIdAndRemove(checkedItemId, function(err){
+  if (!err) { 
+    console.log('Delete Successful')
+    res.redirect("/")
+  } 
+ })
+})
+
 
 app.post("/work", function (req, res) {
   let newtodo = req.body.newtodo;
@@ -73,6 +100,6 @@ app.get("/about", function (req, res) {
   res.render("about");
 });
 
-app.listen("3000", function () {
+app.listen("4000", function () {
   console.log("Server is running correctly");
 });
