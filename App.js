@@ -8,7 +8,7 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 mongoose.set("strictQuery", true);
-mongoose.connect("mongodb://127.0.0.1:27017/todolistDB");
+mongoose.connect("mongodb+srv://rex:rex123@cluster0.8mbgj0g.mongodb.net/todolistDB");
 
 app.set("view engine", "ejs");
 
@@ -99,7 +99,6 @@ app.post("/", function (req, res) {
 app.post("/delete", function (req, res) {
   const checkedItemId = req.body.checkbox;
   const listName = req.body.listName;
-  console.log(listName)
 
   if (listName === "Today") {
     Item.findByIdAndRemove(checkedItemId, function (err) {
